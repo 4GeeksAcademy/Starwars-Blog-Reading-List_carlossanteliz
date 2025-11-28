@@ -32,10 +32,11 @@ export const Home = () => {
   return (
 		<div className="text-center mt-5">
 			<h1>Starwars!!</h1>
-			
-			<p>
-				<img src={rigoImageUrl} />
-			</p>
+			{store.charachter.map((value, index) => {
+				return (
+					<CardPeople key={index} people={value} />	
+				)
+			})}
 		</div>
 	);
 }; 
