@@ -10,7 +10,7 @@ export const Home = () => {
     let personajesBasicos = [];
     let url = "https://www.swapi.tech/api/people/";
 
-    // Loop through all pages until no "next" link
+    
     while (url) {
       const response = await fetch(url);
       const data = await response.json();

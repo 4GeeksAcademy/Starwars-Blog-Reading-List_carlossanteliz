@@ -36,23 +36,13 @@ const CardPeople = ({ people }) => {
       />
       <div className="card-body">
         <h5 className="card-title">{people.name}</h5>
-        <p className="card-text">
-          <strong>Gender:</strong> {people.gender}
-        </p>
-        <p className="card-text">
-          <strong>Hair Color:</strong> {people.hair_color}
-        </p>
-        <p className="card-text">
-          <strong>Height:</strong> {people.height}
-        </p>
-
-        <Link to={`/people/${people.uid}`} className="btn btn-primary me-2">
-          Learn more
+        <Link to={`/people/${people.uid}`} className="btn btn-warning me-2">
+          Details
         </Link>
 
         <button
           onClick={switchFavorite}
-          className={`btn ${favorite ? "btn-danger" : "btn-outline-danger"}`}
+          className={`btn ${favorite ? "btn-danger" : "btn-outline-success"}`}
         >
           {favorite ? "Unfavorite" : "Favorite"}
         </button>
