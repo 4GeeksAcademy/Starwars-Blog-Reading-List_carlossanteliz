@@ -16,23 +16,45 @@ export const DetailPeople = () => {
     skin_color: "",
     name: "",
     species: "",
-    vehicles: "",
-    starships: "",
+    vehicles: [],
+    starships: [],
     description: ""
   });
 
-  const detailPerson = () => {
-  fetch(`https://www.swapi.tech/api/people/${uid}`)
-    .then((res) => res.json())
-    .then((data) =>
-      setPerson({
-        ...data.result.properties,
-        description: data.result.description
-      })
-    )
-    .catch((err) => console.error("Error al ejecutar operación", err));
-};
+  
+  const detailPerson = async () => {
+    try {
+      const res = await fetch(`https://www.swapi.tech/api/people/${uid}`);
+      const data = await res.json();
+      const props = data.result.properties;
 
+      
+      const vehiclesData = await Promise.all(
+        (props.vehicles || []).map(async (url) => {
+          const res = await fetch(url);
+          const vData = await res.json();
+          return vData.result.properties.name;
+        })
+      );
+
+      const starshipsData = await Promise.all(
+        (props.starships || []).map(async (url) => {
+          const res = await fetch(url);
+          const sData = await res.json();
+          return sData.result.properties.name;
+        })
+      );
+
+      setPerson({
+        ...props,
+        description: data.result.description,
+        vehicles: vehiclesData,
+        starships: starshipsData
+      });
+    } catch (err) {
+      console.error("Error al ejecutar operación", err);
+    }
+  };
 
   useEffect(() => {
     detailPerson();
@@ -41,7 +63,6 @@ export const DetailPeople = () => {
   return (
     <div className="container my-5">
       <div className="row g-4 align-items-center">
-        
         <div className="col-md-4 text-center">
           <img
             src={`https://raw.githubusercontent.com/breatheco-de/swapi-images/master/public/images/people/${uid}.jpg`}
@@ -50,12 +71,9 @@ export const DetailPeople = () => {
           />
         </div>
 
-        
         <div className="col-md-8">
           <h2 className="fw-bold display-5">{person.name}</h2>
-          <p className="lead">
-            <p className="lead">{person.description}</p>
-          </p>
+          <p className="lead">{person.description}</p>
 
           <div className="row">
             <div className="col-md-6">
@@ -68,8 +86,8 @@ export const DetailPeople = () => {
             </div>
             <div className="col-md-6">
               <p><strong>Species:</strong> {person.species}</p>
-              <p><strong>Vehicles:</strong> {person.vehicles}</p>
-              <p><strong>Starships:</strong> {person.starships}</p>
+              <p><strong>Vehicles:</strong> {person.vehicles.join(", ")}</p>
+              <p><strong>Starships:</strong> {person.starships.join(", ")}</p> 
             </div>
           </div>
         </div>
