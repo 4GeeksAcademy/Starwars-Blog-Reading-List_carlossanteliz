@@ -18,14 +18,21 @@ export const DetailPeople = () => {
     species: "",
     vehicles: "",
     starships: "",
+    description: ""
   });
 
   const detailPerson = () => {
-    fetch(`https://www.swapi.tech/api/people/${uid}`)
-      .then((res) => res.json())
-      .then((data) => setPerson(data.result.properties))
-      .catch((err) => console.error("Error al ejecutar operación", err));
-  };
+  fetch(`https://www.swapi.tech/api/people/${uid}`)
+    .then((res) => res.json())
+    .then((data) =>
+      setPerson({
+        ...data.result.properties,
+        description: data.result.description
+      })
+    )
+    .catch((err) => console.error("Error al ejecutar operación", err));
+};
+
 
   useEffect(() => {
     detailPerson();
@@ -34,7 +41,7 @@ export const DetailPeople = () => {
   return (
     <div className="container my-5">
       <div className="row g-4 align-items-center">
-        {/* Image */}
+        
         <div className="col-md-4 text-center">
           <img
             src={`https://raw.githubusercontent.com/breatheco-de/swapi-images/master/public/images/people/${uid}.jpg`}
@@ -47,7 +54,7 @@ export const DetailPeople = () => {
         <div className="col-md-8">
           <h2 className="fw-bold display-5">{person.name}</h2>
           <p className="lead">
-            {person.name} Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+            <p className="lead">{person.description}</p>
           </p>
 
           <div className="row">
