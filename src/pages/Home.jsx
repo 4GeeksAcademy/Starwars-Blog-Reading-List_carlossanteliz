@@ -58,13 +58,19 @@ export const Home = () => {
     setStarships(starshipsBasicos);
   }
 
-  useEffect(() => {
-    people();
-    fetchVehicles();   
-    fetchStarships();  
-  }, []);
+useEffect(() => {
+  if (store.people.length === 0) {
+    people(); 
+  }
+  if (vehicles.length === 0) {
+    fetchVehicles();
+  }
+  if (starships.length === 0) {
+    fetchStarships();
+  }
+}, []);
 
-  // Agrupación en filas de 3 para carrusel
+  
   const groupedPeople = store.people.reduce((rows, person, index) => {
     if (index % 3 === 0) rows.push([]);
     rows[rows.length - 1].push(person);
@@ -87,7 +93,7 @@ export const Home = () => {
     <div className="text-center mt-5">
       <h1>Starwars!!</h1>
 
-      {/* Carrusel de personajes (manual, sin auto-slide) */}
+      
       <div id="peopleCarousel" className="carousel slide" data-bs-interval="false"> 
         <div className="carousel-inner">
           {groupedPeople.map((group, i) => (
