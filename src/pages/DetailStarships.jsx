@@ -1,63 +1,81 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const DetailStarships = () => {
   const { store, dispatch } = useGlobalReducer();
-  const navigate = useNavigate();
   const { uid } = useParams();
 
   const [starship, setStarship] = useState({
     name: "",
     model: "",
-    starship_class: "",
     manufacturer: "",
+    cost_in_credits: "",
     length: "",
     crew: "",
     passengers: "",
     hyperdrive_rating: "",
-    cost_in_credits: "",
+    description: ""
   });
 
-  const detailStarship = () => {
-    fetch(`https://www.swapi.tech/api/starships/${uid}`)
-      .then((res) => res.json())
-      .then((data) => setStarship(data.result.properties))
-      .catch((err) => console.error("Error al ejecutar operación", err));
+  
+  const favorite = store.favorites.some(f => f.uid === uid);
+
+  const switchFavorite = () => {
+    if (favorite) {
+      const index = store.favorites.findIndex(f => f.uid === uid);
+      dispatch({ type: "remove_favorite", payload: { index } });
+    } else {
+      dispatch({
+        type: "add_favorite",
+        payload: { item: { name: starship.name, uid: uid, type: "starships" } }
+      });
+    }
   };
 
   useEffect(() => {
-    detailStarship();
+    const fetchStarship = async () => {
+      const res = await fetch(`https://www.swapi.tech/api/starships/${uid}`);
+      const data = await res.json();
+      setStarship({
+        ...data.result.properties,
+        description: data.result.description
+      });
+    };
+    fetchStarship();
   }, [uid]);
 
   return (
     <div className="container my-5">
       <div className="row g-4 align-items-center">
         <div className="col-md-4 text-center">
+          
           <img
             src={`https://raw.githubusercontent.com/breatheco-de/swapi-images/master/public/images/starships/${uid}.jpg`}
-            className="img-fluid rounded shadow"
+            className="img-fluid rounded shadow mb-3"
             alt={starship.name}
           />
         </div>
 
         <div className="col-md-8">
           <h2 className="fw-bold display-5">{starship.name}</h2>
-          <p className="lead">Model: {starship.model}</p>
+          <p className="lead">{starship.description}</p>
 
-          <div className="row">
-            <div className="col-md-6">
-              <p><strong>Class:</strong> {starship.starship_class}</p>
-              <p><strong>Manufacturer:</strong> {starship.manufacturer}</p>
-              <p><strong>Length:</strong> {starship.length} m</p>
-            </div>
-            <div className="col-md-6">
-              <p><strong>Crew:</strong> {starship.crew}</p>
-              <p><strong>Passengers:</strong> {starship.passengers}</p>
-              <p><strong>Hyperdrive Rating:</strong> {starship.hyperdrive_rating}</p>
-              <p><strong>Cost:</strong> {starship.cost_in_credits} credits</p>
-            </div>
-          </div>
+          
+          <button
+            onClick={switchFavorite}
+            className={`btn ${favorite ? "btn-danger" : "btn-outline-success"} mb-3`}
+          >
+            {favorite ? "Unfavorite" : "Favorite"}
+          </button>
+
+          <p><strong>Model:</strong> {starship.model}</p>
+          <p><strong>Manufacturer:</strong> {starship.manufacturer}</p>
+          <p><strong>Cost:</strong> {starship.cost_in_credits}</p>
+          <p><strong>Length:</strong> {starship.length}</p>
+          <p><strong>Crew:</strong> {starship.crew}</p>
+          <p><strong>Passengers:</strong> {starship.passengers}</p>
+          <p><strong>Hyperdrive Rating:</strong> {starship.hyperdrive_rating}</p>
         </div>
       </div>
     </div>

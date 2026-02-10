@@ -21,14 +21,29 @@ export const DetailPeople = () => {
     description: ""
   });
 
-  
+  const favorite = store.favorites.some(f => f.uid === uid);
+  const switchFavorite = () => {
+    if (favorite) {
+      const index = store.favorites.findIndex(f => f.uid === uid);
+      dispatch({ 
+        type: "remove_favorite", payload: { index } });
+    } else { 
+      dispatch({
+         type: "add_favorite",
+          payload: { 
+            item: { name: person.name, uid: uid, type: "people" } 
+          } 
+        }); }
+  };
+
+
   const detailPerson = async () => {
     try {
       const res = await fetch(`https://www.swapi.tech/api/people/${uid}`);
       const data = await res.json();
       const props = data.result.properties;
 
-      
+
       const vehiclesData = await Promise.all(
         (props.vehicles || []).map(async (url) => {
           const res = await fetch(url);
@@ -75,6 +90,10 @@ export const DetailPeople = () => {
           <h2 className="fw-bold display-5">{person.name}</h2>
           <p className="lead">{person.description}</p>
 
+          <button onClick={switchFavorite} className={`btn ${favorite ? "btn-danger" : "btn-outline-success"} mb-3`} >
+            {favorite ? "Unfavorite" : "Favorite"}
+          </button>
+
           <div className="row">
             <div className="col-md-6">
               <p><strong>Gender:</strong> {person.gender}</p>
@@ -87,7 +106,7 @@ export const DetailPeople = () => {
             <div className="col-md-6">
               <p><strong>Species:</strong> {person.species}</p>
               <p><strong>Vehicles:</strong> {person.vehicles.join(", ")}</p>
-              <p><strong>Starships:</strong> {person.starships.join(", ")}</p> 
+              <p><strong>Starships:</strong> {person.starships.join(", ")}</p>
             </div>
           </div>
         </div>
